@@ -1,8 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
-pragma solidity ^0.7.6;
-pragma abicoder v2;
-
-interface ISmartYield {
+pragma solidity ^0.7.0;
+import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+interface ISmartYield is IERC20{
 
     // a senior BOND (metadata for NFT)
     struct SeniorBond {
@@ -40,8 +39,6 @@ interface ISmartYield {
 
     function redeemBond(uint256 bondId_) external;
 
-    function unaccountBonds(uint256[] memory bondIds_) external;
-
     function buyTokens(uint256 underlyingAmount_, uint256 minTokens_, uint256 deadline_) external;
 
     /**
@@ -53,36 +50,14 @@ interface ISmartYield {
 
     function redeemJuniorBond(uint256 jBondId_) external;
 
-    function liquidateJuniorBonds(uint256 upUntilTimestamp_) external;
+    function pool() external view returns(address);
 
-    /**
-     * token purchase price
-     */
-    function price() external returns (uint256);
+    function juniorBondId() external view returns(uint256);
 
-    function abondPaid() external view returns (uint256);
+    function seniorBondId() external view returns(uint256);
 
-    function abondDebt() external view returns (uint256);
 
-    function abondGain() external view returns (uint256);
 
-    /**
-     * @notice current total underlying balance, without accruing interest
-     */
-    function underlyingTotal() external returns (uint256);
-
-    /**
-     * @notice current underlying loanable, without accruing interest
-     */
-    function underlyingLoanable() external returns (uint256);
-
-    function underlyingJuniors() external returns (uint256);
-
-    function bondGain(uint256 principalAmount_, uint16 forDays_) external returns (uint256);
-
-    function maxBondDailyRate() external returns (uint256);
-
-    function setController(address newController_) external;
 }
 
 
@@ -96,24 +71,26 @@ interface IProvider {
 
     function smartYield() external view returns (address);
 
-    function controller() external view returns (address);
-
-    function underlyingFees() external view returns (uint256);
-
-    // deposit underlyingAmount_ into provider, add takeFees_ to fees
-    function _depositProvider(uint256 underlyingAmount_, uint256 takeFees_) external;
-
-    // withdraw underlyingAmount_ from provider, add takeFees_ to fees
-    function _withdrawProvider(uint256 underlyingAmount_, uint256 takeFees_) external;
-
-    function _takeUnderlying(address from_, uint256 amount_) external;
-
-    function _sendUnderlying(address to_, uint256 amount_) external;
-
-    function transferFees() external;
-
     // current total underlying balance as measured by the provider pool, without fees
     function underlyingBalance() external returns (uint256);
 
-    function setController(address newController_) external;
+}
+
+interface YieldFarmContinuous{
+    function poolToken() external view returns(IERC20);
+
+    function deposit(uint256 amount) external;
+
+    function withdraw(uint256 amount) external;
+
+    function withdrawAndClaim(uint256 amount) external returns (uint256);
+
+    function balances(address user) external returns (uint256);
+
+    function claim() external returns (uint256);
+}
+
+interface RewardFactory{
+    function pools() external view returns(YieldFarmContinuous[] memory); 
+    function numberOfPools() external view returns(uint);
 }

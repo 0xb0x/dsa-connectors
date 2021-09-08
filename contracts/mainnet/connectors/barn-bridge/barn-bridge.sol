@@ -47,7 +47,7 @@ abstract contract Helpers {
 
     function isSmartYieldPoolUnderlying(address smartYieldPool, address underlying) internal returns(bool){
         ISmartYield sy_pool = ISmartYield(smartYieldPool);
-        return Pool(sy_pool).uToken() == underlying
+        return Pool(sy_pool.pool()).uToken() == underlying;
     }
 
     function _addSmartYieldPoolMapping(
@@ -67,7 +67,7 @@ abstract contract Helpers {
             require(_tokens[i] != address(0), "addSmartYieldPoolMapping: _tokens address not vaild");
             require(_smartYieldPools[i] != address(0), "addSmartYieldPoolMapping: _smartYieldPools address not vaild");
 
-            CTokenInterface _ctokenContract = CTokenInterface(_ctokens[i]);
+            // CTokenInterface _ctokenContract = CTokenInterface(_ctokens[i]);
             bool _val = isSmartYieldPoolUnderlying(_smartYieldPools[i], _tokens[i]);
 
             require(_val, "addSmartYieldPoolMapping: not a smartYieldPool or mapping mismatch");
@@ -108,7 +108,7 @@ abstract contract Helpers {
                 _smartYieldPools[i],
                 _tokens[i]
             );
-            emit LogSmartYieldPoolUpdated(_names[i], _tokens[i], _ctokens[i]);
+            emit LogSmartYieldPoolUpdated(_names[i], _tokens[i], _smartYieldPools[i]);
         }
     }
 
@@ -117,7 +117,7 @@ abstract contract Helpers {
         address[] memory _tokens,
         address[] memory _smartYieldPools
     ) external isChief {
-        _addSmartYieldPoolMapping(_names, _tokens, _ctokens);
+        _addSmartYieldPoolMapping(_names, _tokens, _smartYieldPools);
     }
 
     function getMapping(string memory _tokenId) external view returns (address, address) {
