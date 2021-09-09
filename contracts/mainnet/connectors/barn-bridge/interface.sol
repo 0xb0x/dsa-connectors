@@ -91,6 +91,6 @@ interface YieldFarmContinuous{
 }
 
 interface RewardFactory{
-    function pools() external view returns(YieldFarmContinuous[] memory); 
+    function pools(uint i) external view returns(YieldFarmContinuous memory); 
     function numberOfPools() external view returns(uint);
 }

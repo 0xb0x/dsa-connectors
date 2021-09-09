@@ -27,19 +27,19 @@ abstract contract Helpers is DSMath, Basic {
     }
     
     function rewardPoolExists(ISmartYield sy_pool) public view returns (bool){
-        uint256 l1 = rp_factory.pools().length;
-        YieldFarmContinuous[] memory yf_arr =  rp_factory.pools();
+        uint256 l1 = rp_factory.numberOfPools();
         for (uint i = 0; i < l1; i++){
-            if (address(sy_pool) == address(yf_arr[i].poolToken())) return true;
+            YieldFarmContinuous memory yf_arr =  rp_factory.pools(i);
+            if (address(sy_pool) == address(yf_arr.poolToken())) return true;
         }
         return false;
     }
 
     function getRewardsPool(ISmartYield sy_pool) public view returns (YieldFarmContinuous) {
-        uint256 l1 = rp_factory.pools().length;
-        YieldFarmContinuous[] memory yf_arr =  rp_factory.pools();
+        uint256 l1 = rp_factory.numberOfPools();
         for (uint i = 0; i < l1; i++){
-            if (address(sy_pool) == address(yf_arr[i].poolToken())) return yf_arr[i];
+            YieldFarmContinuous memory yf_arr =  rp_factory.pools(i);
+            if (address(sy_pool) == address(yf_arr.poolToken())) return yf_arr;
         }
     }
     // function bondLifeMax(ISmartYield sy_pool) public returns(uint16){
